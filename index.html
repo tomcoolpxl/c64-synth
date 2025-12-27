@@ -233,7 +233,7 @@ class EditorScene extends Phaser.Scene {
 
         // --- 4. TITLE & INSTRUCTIONS ---
         // Moved to bottom area to fit 40x24 logic
-        this.add.text(this.startX, 20, '*** C64 BASIC SEQUENCER ***', c64Style);
+        this.add.text(this.startX, 20, '*** C64 ASM SEQUENCER ***', c64Style);
         
         // Use a slightly smaller font ONLY for instructions if needed, 
         // but user requested SAME style. We will use the same style but maybe split lines if it overflows.
@@ -281,10 +281,10 @@ class EditorScene extends Phaser.Scene {
         const bg = this.add.rectangle(400, 320, 800, 640, 0x000000, 0.85);
         
         // Authentic C64 Start Screen text
-        const t1 = this.add.text(400, 280, "    **** C64 BASIC V2 ****", { ...style, color: '#6c5eb5' }).setOrigin(0.5);
-        const t2 = this.add.text(400, 320, " 64K RAM SYSTEM  38911 BASIC BYTES FREE", { ...style, color: '#6c5eb5', fontSize:'24px' }).setOrigin(0.5);
-        const t3 = this.add.text(400, 400, "READY.", { ...style, color: '#6c5eb5' }).setOrigin(0.5);
-        const blink = this.add.rectangle(400, 430, 20, 30, 0x6c5eb5).setOrigin(0.5); // Blinking cursor block
+        const t1 = this.add.text(20, 20, "    **** COMMODORE 64 BASIC V2 ****", { ...style, color: '#6c5eb5' }).setOrigin(0, 0.5);
+        const t2 = this.add.text(20, 60, " 64K RAM SYSTEM  38911 BASIC BYTES FREE", { ...style, color: '#6c5eb5' }).setOrigin(0, 0.5);
+        const t3 = this.add.text(20, 100, "READY.", { ...style, color: '#6c5eb5' }).setOrigin(0, 0.5);
+        const blink = this.add.rectangle(26, 140, 20, 30, 0x6c5eb5).setOrigin(0.5); // Blinking cursor block
         
         this.tweens.add({
             targets: blink,
