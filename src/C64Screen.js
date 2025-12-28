@@ -121,6 +121,13 @@ export class C64Screen {
         textObj.setBackgroundColor(null);
     }
 
+    /**
+     * Prints text starting at specific grid coordinates.
+     * @param {number} x Grid column (0-39)
+     * @param {number} y Grid row (0-24)
+     * @param {string} text Text string
+     * @param {number} colorIdx Color index (0-15)
+     */
     print(x, y, text, colorIdx = Config.COLOR_TEXT) {
         text = text.toUpperCase();
         for (let i = 0; i < text.length; i++) {
@@ -129,6 +136,15 @@ export class C64Screen {
         }
     }
     
+    /**
+     * Prints text at absolute pixel coordinates relative to the screen container.
+     * Used for rendering text outside the standard grid (e.g. border text).
+     * @param {number} pixelX 
+     * @param {number} pixelY 
+     * @param {string} char 
+     * @param {number} colorIdx 
+     * @returns {Phaser.GameObjects.Text}
+     */
     printAt(pixelX, pixelY, char, colorIdx) {
         const style = this.getStyle(colorIdx);
         const fontScale = this.CHAR_SIZE / Config.RENDER_FONT_SIZE;
@@ -219,6 +235,10 @@ export class C64Screen {
         }
     }
 
+    /**
+     * Handles keyboard input for cursor movement and character entry.
+     * @param {KeyboardEvent} event 
+     */
     handleInput(event) {
         if (!this.inputActive) return;
         
@@ -226,16 +246,6 @@ export class C64Screen {
         const maxCols = Config.SCREEN_COLS;
         const maxRows = Config.SCREEN_ROWS;
 
-        // If Enter is handled externally (EditorScene), we skip logic here?
-        // But EditorScene calls handleInput. 
-        // We will perform the default Enter logic (Cursor Down) ONLY IF EditorScene doesn't override it.
-        // Actually, EditorScene will likely call handleInput for typing, but handle Enter itself.
-        // I'll leave the Enter logic here, but if EditorScene intercepts it, it might call preventDefault or not call this.
-        
-        // Wait, I need to know if I should process Enter.
-        // I will trust the caller. If EditorScene wants to handle Enter, it won't call handleInput for Enter, OR it will handle it after.
-        // I'll keep default behavior here.
-        
         this.clearCursorAt(this.cursor.x, this.cursor.y);
 
         if (code === 'ArrowUp') {

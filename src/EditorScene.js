@@ -141,16 +141,16 @@ export class EditorScene extends Phaser.Scene {
     handleGlobalKey(e) {
         if (e.code === 'Enter') {
             const line = this.c64.getLine(this.c64.cursor.y).trim();
-            this.c64.handleInput(e); // Newline
+            this.c64.handleInput(e); // Handle Newline via C64Screen
             
             if (line === "RUN") {
                 this.startSequencer();
             } else if (line === "") {
                 // Empty line - do nothing
             } else if (this.state === 'SEQUENCER' && (line.match(/^\d+/) || line === "")) {
-                // Numbered lines or empty in sequencer - do nothing
+                // Numbered lines or empty in sequencer - do nothing (mimic BASIC entry)
             } else {
-                // Syntax Error
+                // Direct Mode Syntax Error
                 this.c64.newLine();
                 this.c64.printTextAtCursor("?SYNTAX  ERROR", Config.COLOR_TEXT);
                 this.c64.newLine();
@@ -158,6 +158,9 @@ export class EditorScene extends Phaser.Scene {
                 this.c64.newLine();
             }
         } else {
+            if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) {
+                e.preventDefault(); 
+            }
             this.c64.handleInput(e);
         }
     }
