@@ -6,9 +6,8 @@ export class C64Screen {
         this.scene = scene;
         this.startX = startX;
         this.startY = startY;
-        this.scaleFactor = scale; // Visual scaling of the 8px grid
+        this.scaleFactor = scale; 
 
-        // Derived Dimensions
         this.CHAR_SIZE = Config.CHAR_SIZE_PX * scale; 
         
         this.grid = []; 
@@ -27,14 +26,7 @@ export class C64Screen {
 
     initGrid() {
         const fontScale = this.CHAR_SIZE / Config.RENDER_FONT_SIZE;
-
-        const style = {
-            fontFamily: '"Sixtyfour", monospace',
-            fontSize: `${Config.RENDER_FONT_SIZE}px`,
-            color: C64_COLORS[Config.COLOR_TEXT],
-            resolution: 1, 
-            fontWeight: '400'
-        };
+        const style = this.getStyle(Config.COLOR_TEXT);
 
         for (let y = 0; y < Config.SCREEN_ROWS; y++) {
             for (let x = 0; x < Config.SCREEN_COLS; x++) {
@@ -54,12 +46,21 @@ export class C64Screen {
             }
         }
     }
+    
+    getStyle(colorIdx) {
+        return {
+            fontFamily: '"Sixtyfour", monospace',
+            fontSize: `${Config.RENDER_FONT_SIZE}px`,
+            color: C64_COLORS[colorIdx],
+            resolution: 1, 
+            fontWeight: '400'
+        };
+    }
 
     initBorder() {
         const gameW = this.scene.scale.width;
         const gameH = this.scene.scale.height;
         
-        // Border (Fills entire canvas)
         this.border = this.scene.add.rectangle(
             -this.startX, 
             -this.startY, 
@@ -69,7 +70,6 @@ export class C64Screen {
         ).setOrigin(0,0);
         this.container.add(this.border);
         
-        // Screen Background (Central area)
         const screenW = Config.SCREEN_COLS * this.CHAR_SIZE;
         const screenH = Config.SCREEN_ROWS * this.CHAR_SIZE;
         
@@ -102,14 +102,9 @@ export class C64Screen {
         const mem = this.memory[idx];
         
         if (this.cursor.visible && this.inputActive) {
-            // INVERSE VIDEO
-            // Foreground becomes Background Color (Blue)
-            // Background becomes Foreground Color (Light Blue)
-            // Effectively swapping the visual text color and block color
             textObj.setColor(C64_COLORS[Config.COLOR_BG]); 
             textObj.setBackgroundColor(C64_COLORS[mem.colorIdx]); 
         } else {
-            // NORMAL
             textObj.setColor(C64_COLORS[mem.colorIdx]);
             textObj.setBackgroundColor(null);
         }
@@ -132,6 +127,20 @@ export class C64Screen {
             if (x + i >= Config.SCREEN_COLS) break;
             this.setChar(x + i, y, text[i], colorIdx);
         }
+    }
+    
+    // New method for arbitrary placement
+    printAt(pixelX, pixelY, char, colorIdx) {
+        const style = this.getStyle(colorIdx);
+        const fontScale = this.CHAR_SIZE / Config.RENDER_FONT_SIZE;
+        
+        const t = this.scene.add.text(pixelX, pixelY, char, style);
+        t.setPadding(0, 0, 0, 0);
+        t.setFixedSize(Config.RENDER_FONT_SIZE, Config.RENDER_FONT_SIZE);
+        t.setScale(fontScale);
+        
+        this.container.add(t);
+        return t;
     }
 
     setChar(x, y, char, colorIdx) {

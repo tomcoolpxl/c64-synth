@@ -1,6 +1,5 @@
 import { C64Sequencer } from './C64Sequencer.js';
 import { C64Screen } from './C64Screen.js';
-import { C64_COLORS } from './utils/c64colors.js';
 import { Config } from './Config.js';
 
 export class EditorScene extends Phaser.Scene {
@@ -8,9 +7,9 @@ export class EditorScene extends Phaser.Scene {
         super('EditorScene');
         this.sequencer = null;
         this.c64 = null;
-        this.state = 'INTRO'; // INTRO or SEQUENCER
-        this.prevStep = -1; // Track playhead position
-        this.creditsGroup = []; // Track credit text objects to clear them if needed
+        this.state = 'INTRO'; 
+        this.prevStep = -1; 
+        this.creditsGroup = []; 
     }
 
     create() {
@@ -34,7 +33,7 @@ export class EditorScene extends Phaser.Scene {
         this.state = 'INTRO';
         this.c64.inputActive = false;
         this.c64.clear();
-        this.clearCredits(); // Clear any existing credits
+        this.clearCredits(); 
         this.c64.cursor.visible = false;
 
         this.c64.print(4, 1, "**** COMMODORE 64 BASIC V2 ****", Config.COLOR_TEXT);
@@ -88,7 +87,7 @@ export class EditorScene extends Phaser.Scene {
         this.c64.print(0, 19, "ENTER : RETURN", Config.COLOR_TEXT);
 
         // Credits (Exactly 1 Line Gap)
-        this.renderBorderText("ORIGINAL CONCEPT: LFTKRYO (YOUTUBE)", C64_COLORS[Config.COLOR_CREDIT]);
+        this.renderBorderText("ORIGINAL CONCEPT: LFTKRYO (YOUTUBE)", Config.COLOR_CREDIT);
 
         // Sequencer Events
         this.prevStep = -1;
@@ -116,43 +115,28 @@ export class EditorScene extends Phaser.Scene {
         });
     }
 
-    renderBorderText(text, colorHex) {
-        const FONT_SIZE = Config.RENDER_FONT_SIZE;
+    renderBorderText(text, colorIdx) {
         const CHAR_SIZE = this.c64.CHAR_SIZE;
-        const SCALE = CHAR_SIZE / FONT_SIZE;
         
         // Relative Y: Grid Height + 1 Line Gap
-        const relY = (this.c64.ROWS * CHAR_SIZE) + CHAR_SIZE; 
-        const relX = 0; // Relative to container start
-
-        const style = {
-            fontFamily: '"Sixtyfour", monospace',
-            fontSize: `${FONT_SIZE}px`,
-            color: colorHex,
-            resolution: 1, 
-            fontWeight: '400'
-        };
-
-        this.clearCredits(); // Ensure no dupes
+        const relY = (Config.SCREEN_ROWS * CHAR_SIZE) + CHAR_SIZE; 
+        const relX = 0; 
+        
+        this.clearCredits(); 
 
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
-            const t = this.add.text(
+            const t = this.c64.printAt(
                 relX + (i * CHAR_SIZE),
                 relY,
                 char,
-                style
+                colorIdx
             );
-            t.setPadding(0, 0, 0, 0);
-            t.setFixedSize(FONT_SIZE, FONT_SIZE);
-            t.setScale(SCALE);
             
             t.setInteractive({ useHandCursor: true });
             t.on('pointerdown', () => {
                  window.open('https://www.youtube.com/watch?v=ly5BhGOt2vE', '_blank');
             });
-            
-            this.c64.container.add(t); // Add to C64 Container
             this.creditsGroup.push(t);
         }
     }
