@@ -129,7 +129,6 @@ export class C64Screen {
         }
     }
     
-    // New method for arbitrary placement
     printAt(pixelX, pixelY, char, colorIdx) {
         const style = this.getStyle(colorIdx);
         const fontScale = this.CHAR_SIZE / Config.RENDER_FONT_SIZE;
@@ -141,6 +140,48 @@ export class C64Screen {
         
         this.container.add(t);
         return t;
+    }
+    
+    // Prints text at current cursor position and advances/wraps cursor
+    printTextAtCursor(text, colorIdx = Config.COLOR_TEXT) {
+        text = text.toUpperCase();
+        for (let i = 0; i < text.length; i++) {
+            this.setChar(this.cursor.x, this.cursor.y, text[i], colorIdx);
+            this.advanceCursor();
+        }
+    }
+    
+    advanceCursor() {
+        this.clearCursorAt(this.cursor.x, this.cursor.y);
+        this.cursor.x++;
+        if (this.cursor.x >= Config.SCREEN_COLS) {
+            this.cursor.x = 0;
+            this.cursor.y++;
+            if (this.cursor.y >= Config.SCREEN_ROWS) {
+                this.cursor.y = 0; // Wrap top
+            }
+        }
+        this.renderCursorAt(this.cursor.x, this.cursor.y);
+    }
+    
+    newLine() {
+        this.clearCursorAt(this.cursor.x, this.cursor.y);
+        this.cursor.x = 0;
+        this.cursor.y++;
+        if (this.cursor.y >= Config.SCREEN_ROWS) {
+            this.cursor.y = 0;
+        }
+        this.renderCursorAt(this.cursor.x, this.cursor.y);
+    }
+    
+    getLine(y) {
+        if (y < 0 || y >= Config.SCREEN_ROWS) return "";
+        let line = "";
+        const startIdx = y * Config.SCREEN_COLS;
+        for (let i = 0; i < Config.SCREEN_COLS; i++) {
+            line += this.memory[startIdx + i].char;
+        }
+        return line;
     }
 
     setChar(x, y, char, colorIdx) {
@@ -185,6 +226,16 @@ export class C64Screen {
         const maxCols = Config.SCREEN_COLS;
         const maxRows = Config.SCREEN_ROWS;
 
+        // If Enter is handled externally (EditorScene), we skip logic here?
+        // But EditorScene calls handleInput. 
+        // We will perform the default Enter logic (Cursor Down) ONLY IF EditorScene doesn't override it.
+        // Actually, EditorScene will likely call handleInput for typing, but handle Enter itself.
+        // I'll leave the Enter logic here, but if EditorScene intercepts it, it might call preventDefault or not call this.
+        
+        // Wait, I need to know if I should process Enter.
+        // I will trust the caller. If EditorScene wants to handle Enter, it won't call handleInput for Enter, OR it will handle it after.
+        // I'll keep default behavior here.
+        
         this.clearCursorAt(this.cursor.x, this.cursor.y);
 
         if (code === 'ArrowUp') {
