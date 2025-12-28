@@ -5,7 +5,7 @@
 
 A JavaScript port of the legendary 249-byte Commodore 64 musical sequencer originally written in 6502 Assembly and BASIC.
 
-This is the opposite of low-level, close-to-the-hardware, local, compact assembly code. :^)
+This is the opposite of low-level, close-to-the-hardware, compact, elegant, optimized, hand-crafted assembly code. :^)
 
 <https://tomcoolpxl.github.io/c64-synth/>
 
@@ -13,7 +13,7 @@ This is the opposite of low-level, close-to-the-hardware, local, compact assembl
 
 ## AI & Development
 
-This mini-project served as a focused test of the **Gemini Pro CLI** to see if an AI agent could successfully translate hardware-level logic from 1980s BASIC and 6502 Assembly into a  functional JavaScript application.
+This mini-project has no real purpose. It served as a focused test of the **Gemini Pro CLI** to see if an AI agent could successfully translate hardware-level logic from 1980s BASIC and 6502 Assembly into a functional JavaScript application.
 
 The AI managed to decipher the frequency table generation, the screen memory scanning logic, and the "Snare Hack" synthesis trick. A fully working prototype, including the interactive sequencer, was delivered within **45 minutes** with only gentle coaching to refine the hardware timings.
 
