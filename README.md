@@ -5,6 +5,8 @@
 
 A JavaScript port of the legendary 249-byte Commodore 64 musical sequencer originally written in 6502 Assembly and BASIC.
 
+This is the opposite of low-level, close-to-the-hardware, local, compact assembly code. :^)
+
 <https://tomcoolpxl.github.io/c64-synth/>
 
 ![screenshot](screenshot.png)
@@ -64,9 +66,11 @@ The sequencer doesn't use a dedicated timer. It reads the C64 system interrupt c
 ## Port Features
 
 *   **Interactive Shell:** Boots directly into a "READY." prompt.
-*   **True-to-Life Logic:** Implements the exact pitch-masking math from the original ASM (`ADC` values 82, 70, 46).
+*   **True-to-Life Logic:** Implements the pitch-masking math from the original ASM (`ADC` values 82, 70, 46).
 *   **High-Res Pixel Font:** Uses the "Sixtyfour" variable font, rendered at 64px and downscaled to 0.25 to ensure the "square" pixel structure is perfectly preserved without browser blurring.
 *   **PAL Accuracy:** Tuned to the 985,248Hz PAL clock for the authentic 6581 SID sound.
+
+Despite all this, the sound acurracy is sadly quite terrible.
 
 ## Controls
 
