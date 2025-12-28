@@ -2,6 +2,10 @@
 
 A not so pixel-perfect and not so sample-accurate JavaScript port of the C64 BASIC/Assembly musical sequencer originally written by [lftkryo](https://www.youtube.com/@lftkryo).
 
+Try it here:
+
+<https://tomcoolpxl.github.io/c64-synth/>
+
 * **Original Video:** [Making 8-bit Music From Scratch at the Commodore 64 BASIC Prompt](https://www.youtube.com/watch?v=ly5BhGOt2vE)
 
 This project replicates the behavior of the 249-byte assembler program encoded in BASIC, that loads the assembler in RAM and also contains part of the user interface, by [Linus Åkesson](https://linusakesson.net/). The program synthesizes a 3-voice song using the C64's SID chip and includes a fully interactive sequencer.
