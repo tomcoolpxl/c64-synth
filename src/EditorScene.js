@@ -3,6 +3,22 @@ import { C64Screen } from './C64Screen.js';
 import { C64_COLORS } from './utils/c64colors.js';
 import { Config } from './Config.js';
 
+/**
+ * Main Controller Scene
+ * 
+ * STATE MACHINE:
+ * - 'INTRO': Simulates the C64 BASIC "READY" prompt. 
+ *            User can type freely. Pressing ENTER on "RUN" triggers transitions.
+ * - 'SEQUENCER': The active music mode. 
+ *                User types notes (A-Z) into the grid.
+ * 
+ * INTERACTION:
+ * This scene intercepts global keyboard events and routes them to the C64Screen
+ * "Virtual Machine". It handles high-level logic like:
+ * - Detecting commands (RUN)
+ * - Rendering "Syntax Errors" (if user types junk in INTRO mode)
+ * - Managing the Transition between the Shell and the Sequencer View.
+ */
 export class EditorScene extends Phaser.Scene {
     constructor() {
         super('EditorScene');
@@ -140,17 +156,21 @@ export class EditorScene extends Phaser.Scene {
 
     handleGlobalKey(e) {
         if (e.code === 'Enter') {
+            // READ THE SCREEN: What did the user type on the current line?
             const line = this.c64.getLine(this.c64.cursor.y).trim();
             this.c64.handleInput(e); // Handle Newline via C64Screen
             
+            // COMMAND PARSING
             if (line === "RUN") {
                 this.startSequencer();
             } else if (line === "") {
-                // Empty line - do nothing
+                // Empty line - do nothing (just a newline)
             } else if (this.state === 'SEQUENCER' && (line.match(/^\d+/) || line === "")) {
-                // Numbered lines or empty in sequencer - do nothing (mimic BASIC entry)
+                // Sequencer Mode: Allow line numbers (80 REM...) or empty lines without error
+                // This preserves the illusion of editing a BASIC program.
             } else {
-                // Direct Mode Syntax Error
+                // INTRO Mode: Anything else is a "Syntax Error"
+                // This mimics the strict BASIC parser.
                 this.c64.newLine();
                 this.c64.printTextAtCursor("?SYNTAX  ERROR", Config.COLOR_TEXT);
                 this.c64.newLine();

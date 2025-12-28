@@ -1,6 +1,23 @@
 import { C64_COLORS } from './utils/c64colors.js';
 import { Config } from './Config.js';
 
+/**
+ * Virtual C64 Screen
+ * 
+ * ARCHITECTURE:
+ * This class decouples the "Visuals" (Phaser Text Objects) from the "Logical State" (Memory).
+ * 
+ * 1. this.grid: Array of Phaser.GameObjects.Text. 
+ *    - Responsible solely for rendering.
+ *    - Indices map 1:1 to the 40x25 screen layout.
+ * 
+ * 2. this.memory: Array of Objects { char, colorIdx }.
+ *    - Acts as the "Video RAM".
+ *    - The C64Sequencer reads from THIS array, not the text objects directly.
+ * 
+ * This separation allows the audio engine to query the state efficiently without 
+ * touching the DOM or Phaser rendering pipeline during the critical audio loop.
+ */
 export class C64Screen {
     constructor(scene, startX, startY, scale = 2) {
         this.scene = scene;
@@ -10,12 +27,15 @@ export class C64Screen {
 
         this.CHAR_SIZE = Config.CHAR_SIZE_PX * scale; 
         
+        // Visual Objects (Phaser Text)
         this.grid = []; 
+        // Logical State (Video RAM)
         this.memory = []; 
         
         this.cursor = { x: 0, y: 0, visible: true }; 
         this.currentColorIdx = Config.COLOR_TEXT; 
 
+        // Container allows moving the entire "monitor" easily
         this.container = scene.add.container(startX, startY);
         this.inputActive = true;
         

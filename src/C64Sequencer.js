@@ -12,6 +12,9 @@ export class C64Sequencer {
         this.screen = screenRef; 
         
         // Track Configuration mapped to Screen Rows
+        // 'mask': Offsets the character code (A=1, B=2, etc.) to a specific index in the frequency table.
+        //         This allows the same character ('A') to play different octaves on different tracks.
+        //         e.g., Mask 82 might map 'A' to C4, while Mask 46 maps 'A' to C2.
         this.TRACK_CONFIG = [
             { 
                 row: Config.ROW_TRACK_1, 
@@ -140,27 +143,36 @@ export class C64Sequencer {
         const now = this.context.currentTime;
         
         this.oscs.forEach((v) => {
-            // Read directly from Screen Memory
+            // --- VISUAL MEMORY READ ---
+            // Instead of an internal array, we read the character displayed on the screen.
+            // This replicates the original C64 assembly trick of reading Video RAM (0x0400)
+            // to save memory. What you see is literally what you hear.
             const col = Config.SEQ_COL_OFFSET + this.currentStep;
             const char = this.screen.getChar(col, v.track.row);
             
+            // Convert Char to Index: A=1, B=2 ... Z=26
             const screenCode = (char && char.trim()) ? (char.toUpperCase().charCodeAt(0) - 64) : 32;
 
             if (screenCode < 1 || screenCode > 26) { 
+                // Rest or Invalid Char
                 if (v.track.mode === 'bass_snare') {
+                    // Percussion Logic: Switch to Noise for "Snare" sound on release/rest
                     v.osc.frequency.setValueAtTime(0, now);
                     v.noiseGain.gain.setValueAtTime(0.5, now);
                     v.gain.gain.cancelScheduledValues(now);
                     v.gain.gain.setValueAtTime(0.3, now);
                     v.gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
                 } else {
+                    // Standard Decay
                     v.gain.gain.cancelScheduledValues(now);
                     v.gain.gain.setTargetAtTime(0, now, v.track.release * 0.2);
                 }
             } 
             else { 
+                // Note On
                 if (v.track.mode === 'bass_snare') v.noiseGain.gain.setValueAtTime(0, now);
                 
+                // Calculate Frequency: Base Index (from Char) + Track Mask (Octave Offset)
                 const idx = screenCode + v.track.mask;
                 if (idx < this.freqTable.length) {
                     v.osc.frequency.setValueAtTime(this.freqTable[idx], now);
